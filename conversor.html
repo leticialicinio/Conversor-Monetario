@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Moeda</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+			background-image: url('imagem/fundo.avif');
+            
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2em;
+            color: #007bff;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        select, input[type="number"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button {
+            padding: 15px;
+            background-color: #28a745;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #resultado {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #resultadoTexto {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conversor de Moeda</h1>
+        <form id="conversorForm">
+            <label for="moedaOrigem">Moeda de Origem:</label>
+            <select id="moedaOrigem">
+                <option value="USD">Dólar (USD)</option>
+                <option value="EUR">Euro (EUR)</option>
+                <option value="BRL">Real (BRL)</option>
+                <option value="JPY">Yen Japonês (JPY)</option>
+                <option value="GBP">Libra Esterlina (GBP)</option>
+                <option value="CAD">Dólar Canadense (CAD)</option>
+                <option value="AUD">Dólar Australiano (AUD)</option>
+                <option value="CNY">Yuan Chinês (CNY)</option>
+                <option value="CHF">Franco Suíço (CHF)</option>
+                <option value="NZD">Dólar Neozelandês (NZD)</option>
+                <option value="SEK">Coroa Sueca (SEK)</option>
+                <option value="NOK">Coroa Norueguesa (NOK)</option>
+                <option value="MXN">Peso Mexicano (MXN)</option>
+                <option value="SGD">Dólar de Singapura (SGD)</option>
+                <option value="HKD">Dólar de Hong Kong (HKD)</option>
+                <option value="TRY">Lira Turca (TRY)</option>
+                <option value="ZAR">Rand Sul-Africano (ZAR)</option>
+            </select>
+
+            <label for="moedaDestino">Moeda de Destino:</label>
+            <select id="moedaDestino">
+                <option value="USD">Dólar (USD)</option>
+                <option value="EUR">Euro (EUR)</option>
+                <option value="BRL">Real (BRL)</option>
+                <option value="JPY">Yen Japonês (JPY)</option>
+                <option value="GBP">Libra Esterlina (GBP)</option>
+                <option value="CAD">Dólar Canadense (CAD)</option>
+                <option value="AUD">Dólar Australiano (AUD)</option>
+                <option value="CNY">Yuan Chinês (CNY)</option>
+                <option value="CHF">Franco Suíço (CHF)</option>
+                <option value="NZD">Dólar Neozelandês (NZD)</option>
+                <option value="SEK">Coroa Sueca (SEK)</option>
+                <option value="NOK">Coroa Norueguesa (NOK)</option>
+                <option value="MXN">Peso Mexicano (MXN)</option>
+                <option value="SGD">Dólar de Singapura (SGD)</option>
+                <option value="HKD">Dólar de Hong Kong (HKD)</option>
+                <option value="TRY">Lira Turca (TRY)</option>
+                <option value="ZAR">Rand Sul-Africano (ZAR)</option>
+            </select>
+
+            <label for="valor">Valor a Converter:</label>
+            <input type="number" id="valor" name="valor" step="0.01" required>
+
+            <button type="button" onclick="converterMoeda()">Converter</button>
+        </form>
+        <div id="resultado">
+            <p id="resultadoTexto"></p>
+        </div>
+    </div>
+    <script>
+        // Taxas de câmbio fictícias para simplificação
+        const taxasCambio = {
+            USD: { EUR: 0.93, BRL: 5.10, JPY: 147.60, GBP: 0.82, CAD: 1.36, AUD: 1.49, CNY: 7.02, CHF: 0.91, NZD: 1.60, SEK: 10.21, NOK: 10.45, MXN: 18.20, SGD: 1.36, HKD: 7.85, TRY: 27.50, ZAR: 18.80, USD: 1 },
+            EUR: { USD: 1.08, BRL: 5.50, JPY: 158.24, GBP: 0.88, CAD: 1.46, AUD: 1.60, CNY: 7.54, CHF: 0.98, NZD: 1.72, SEK: 10.97, NOK: 11.23, MXN: 19.57, SGD: 1.46, HKD: 8.45, TRY: 29.40, ZAR: 20.05, EUR: 1 },
+            BRL: { USD: 0.20, EUR: 0.18, JPY: 28.79, GBP: 0.16, CAD: 0.27, AUD: 0.31, CNY: 1.37, CHF: 0.18, NZD: 0.33, SEK: 2.06, NOK: 2.11, MXN: 3.49, SGD: 0.27, HKD: 1.56, TRY: 5.17, ZAR: 3.71, BRL: 1 },
+            JPY: { USD: 0.0068, EUR: 0.0063, BRL: 0.035, GBP: 0.0054, CAD: 0.0092, AUD: 0.0107, CNY: 0.047, CHF: 0.0062, NZD: 0.011, SEK: 0.068, NOK: 0.070, MXN: 0.12, SGD: 0.0092, HKD: 0.058, TRY: 0.19, ZAR: 0.13, JPY: 1 },
+            GBP: { USD: 1.22, EUR: 1.14, BRL: 6.19, JPY: 185.27, CAD: 1.66, AUD: 1.80, CNY: 9.20, CHF: 1.12, NZD: 1.95, SEK: 12.10, NOK: 12.40, MXN: 21.00, SGD: 1.66, HKD: 9.75, TRY: 35.00, ZAR: 24.40, GBP: 1 },
+            CAD: { USD: 0.74, EUR: 0.68, BRL: 3.68, JPY: 109.24, GBP: 0.60, AUD: 0.93, CNY: 5.37, CHF: 0.61, NZD: 1.12, SEK: 7.14, NOK: 7.40, MXN: 12.15, SGD: 0.74, HKD: 5.58, TRY: 1.67, ZAR: 1.23, CAD: 1 },
+            AUD: { USD: 0.67, EUR: 0.62, BRL: 3.20, JPY: 94.00, GBP: 0.56, CAD: 1.08, CNY: 5.12, CHF: 0.65, NZD: 1.20, SEK: 7.12, NOK: 7.30, MXN: 11.61, SGD: 0.93, HKD: 4.71, TRY: 1.53, ZAR: 1.30, AUD: 1 },
+            CNY: { USD: 0.14, EUR: 0.13, BRL: 0.73, JPY: 21.28, GBP: 0.11, CAD: 0.18, AUD: 0.20, CHF: 0.14, NZD: 0.23, SEK: 1.40, NOK: 1.44, MXN: 2.18, SGD: 0.14, HKD: 0.89, TRY: 0.25, ZAR: 0.18, CNY: 1 },
+            CHF: { USD: 1.10, EUR: 1.02, BRL: 5.58, JPY: 177.42, GBP: 0.89, CAD: 1.50, AUD: 1.54, CNY: 7.09, CHF: 1, NZD: 1.75, SEK: 10.35, NOK: 10.58, MXN: 18.58, SGD: 1.51, HKD: 8.57, TRY: 29.65, ZAR: 20.40, CHF: 1 },
+            NZD: { USD: 0.63, EUR: 0.58, BRL: 3.05, JPY: 89.59, GBP: 0.51, CAD: 0.86, AUD: 0.83, CNY: 4.70, CHF: 0.57, NZD: 1, SEK: 6.40, NOK: 6.57, MXN: 11.45, SGD: 0.63, HKD: 4.36, TRY: 1.46, ZAR: 1.08, NZD: 1 },
+            SEK: { USD: 0.098, EUR: 0.091, BRL: 0.49, JPY: 14.88, GBP: 0.082, CAD: 0.14, AUD: 0.14, CNY: 0.71, CHF: 0.096, NZD: 0.16, SEK: 1, NOK: 0.94, MXN: 1.79, SGD: 0.099, HKD: 0.63, TRY: 2.30, ZAR: 1.64, SEK: 1 },
+            NOK: { USD: 0.095, EUR: 0.088, BRL: 0.49, JPY: 14.44, GBP: 0.080, CAD: 0.14, AUD: 0.14, CNY: 0.70, CHF: 0.094, NZD: 0.15, SEK: 1.06, NOK: 1, MXN: 1.76, SGD: 0.095, HKD: 0.61, TRY: 2.20, ZAR: 1.58, NOK: 1 },
+            MXN: { USD: 0.055, EUR: 0.051, BRL: 0.29, JPY: 8.36, GBP: 0.048, CAD: 0.083, AUD: 0.086, CNY: 0.46, CHF: 0.054, NZD: 0.087, SEK: 0.56, NOK: 0.57, MXN: 1, SGD: 0.057, HKD: 0.35, TRY: 1.21, ZAR: 0.83, MXN: 1 },
+            SGD: { USD: 0.74, EUR: 0.68, BRL: 3.66, JPY: 109.44, GBP: 0.60, CAD: 0.74, AUD: 1.07, CNY: 5.53, CHF: 0.66, NZD: 1.16, SEK: 7.27, NOK: 7.49, MXN: 12.05, SGD: 1, HKD: 5.56, TRY: 1.62, ZAR: 1.28, SGD: 1 },
+            HKD: { USD: 0.13, EUR: 0.12, BRL: 0.72, JPY: 20.69, GBP: 0.11, CAD: 0.21, AUD: 0.21, CNY: 1.12, CHF: 0.12, NZD: 0.22, SEK: 1.42, NOK: 1.46, MXN: 2.20, SGD: 0.18, HKD: 1, TRY: 0.28, ZAR: 0.20, HKD: 1 },
+            TRY: { USD: 0.036, EUR: 0.034, BRL: 0.19, JPY: 5.26, GBP: 0.03, CAD: 0.059, AUD: 0.065, CNY: 0.29, CHF: 0.034, NZD: 0.062, SEK: 0.43, NOK: 0.45, MXN: 0.72, SGD: 0.059, HKD: 0.36, TRY: 1, ZAR: 0.26, TRY: 1 },
+            ZAR: { USD: 0.053, EUR: 0.049, BRL: 0.27, JPY: 7.12, GBP: 0.045, CAD: 0.075, AUD: 0.077, CNY: 0.35, CHF: 0.051, NZD: 0.083, SEK: 0.61, NOK: 0.63, MXN: 1.21, SGD: 0.078, HKD: 0.43, TRY: 0.33, ZAR: 1 }
+        };
+
+        function converterMoeda() {
+            const moedaOrigem = document.getElementById('moedaOrigem').value;
+            const moedaDestino = document.getElementById('moedaDestino').value;
+            const valor = parseFloat(document.getElementById('valor').value);
+
+            if (isNaN(valor) || valor <= 0) {
+                alert("Por favor, insira um valor válido.");
+                return;
+            }
+
+            if (moedaOrigem === moedaDestino) {
+                document.getElementById('resultadoTexto').innerText = "As moedas de origem e destino são iguais.";
+                return;
+            }
+
+            const taxa = taxasCambio[moedaOrigem][moedaDestino];
+            if (taxa) {
+                const resultado = valor * taxa;
+                document.getElementById('resultadoTexto').innerText = `${valor.toFixed(2)} ${moedaOrigem} = ${resultado.toFixed(2)} ${moedaDestino}`;
+            } else {
+                document.getElementById('resultadoTexto').innerText = "Taxa de câmbio não disponível.";
+            }
+        }
+    </script>
+</body>
+</html>
